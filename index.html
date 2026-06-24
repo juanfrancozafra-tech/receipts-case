@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Clara Receipts — Free trip expense reports</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          background: "#ffffff",
+          foreground: "#011131",
+          ink: "#011131",
+          "navy-deep": "#011131",
+          navy: "#032257",
+          primary: "#86ea63",
+          accent: "#0853b6",
+          link: "#0853b6",
+          muted: "#f3f5f6",
+          surface: "#f3f5f6",
+          mute: "#787c8c",
+          border: "#e3e3e8",
+          destructive: "#e5484d",
+          salmon: "#f09e99",
+          cyan: "#0cd6dc",
+        },
+      },
+    },
+  };
+</script>
+<style>
+  :root {
+    --background: #ffffff;
+    --foreground: #011131;
+    --ink: #011131;
+    --navy-deep: #011131;
+    --navy: #032257;
+    --primary: #86ea63;
+    --primary-hover: #00cf60;
+    --accent: #0853b6;
+    --link: #0853b6;
+    --muted: #f3f5f6;
+    --surface: #f3f5f6;
+    --mute: #787c8c;
+    --border: #e3e3e8;
+    --destructive: #e5484d;
+    --salmon: #f09e99;
+    --cyan: #0cd6dc;
+    --amber-soft: #fff4d6;
+    --amber-soft-fg: #8a5a00;
+    --shadow-card: 0 1px 2px rgba(3, 34, 87, 0.04), 0 8px 24px rgba(3, 34, 87, 0.06);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "Inter", system-ui, sans-serif;
+    background: var(--background);
+    color: var(--foreground);
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3 {
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    color: var(--navy);
+  }
+  .card-soft {
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-card);
+  }
+  .btn-primary {
+    background: var(--primary);
+    color: var(--navy);
+    font-weight: 700;
+    border-radius: 8px;
+    padding: 0.75rem 1.25rem;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s ease, opacity 0.15s ease;
+  }
+  .btn-primary:hover:not(:disabled) { background: var(--primary-hover); }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-outline-navy {
+    background: transparent;
+    border: 1.5px solid var(--navy);
+    color: var(--navy);
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 0.7rem 1.2rem;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .btn-outline-navy:hover:not(:disabled) { background: rgba(3, 34, 87, 0.06); }
+  .btn-outline-navy:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-outline-white {
+    background: transparent;
+    border: 1.5px solid rgba(255, 255, 255, 0.6);
+    color: #fff;
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 0.7rem 1.2rem;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.15s ease;
+  }
+  .btn-outline-white:hover { background: rgba(255, 255, 255, 0.12); }
+  .input-field {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.65rem 0.85rem;
+    font-size: 0.95rem;
+    font-family: inherit;
+    color: var(--foreground);
+    background: #fff;
+    outline: none;
+    transition: border 0.15s ease, box-shadow 0.15s ease;
+  }
+  .input-field:focus {
+    border-color: var(--navy);
+    box-shadow: 0 0 0 3px rgba(3, 34, 87, 0.08);
+  }
+  .skeleton {
+    background: linear-gradient(90deg, #eef0f3 25%, #f7f8fa 37%, #eef0f3 63%);
+    background-size: 400% 100%;
+    animation: shimmer 1.4s ease infinite;
+    border-radius: 6px;
+  }
+  @keyframes shimmer {
+    0% { background-position: 100% 0; }
+    100% { background-position: -100% 0; }
+  }
+  .spinner {
+    width: 38px;
+    height: 38px;
+    border: 3px solid var(--navy);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .uploadbar-track {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 5px;
+    background: rgba(3, 34, 87, 0.1);
+  }
+  .uploadbar-fill {
+    height: 100%;
+    width: 0;
+    background: var(--primary);
+    animation: fillbar 0.95s linear forwards;
+  }
+  @keyframes fillbar { from { width: 0; } to { width: 100%; } }
+  .sort-th { cursor: pointer; user-select: none; }
+  .sort-th:hover { background: #e9edf1; }
+  .editable-cell {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 0.9rem;
+    color: var(--foreground);
+    padding: 0.35rem 0.4rem;
+    border-radius: 6px;
+    outline: none;
+    transition: background 0.12s ease, box-shadow 0.12s ease;
+  }
+  .editable-cell:hover { background: var(--surface); }
+  .editable-cell:focus {
+    background: var(--surface);
+    box-shadow: 0 0 0 2px rgba(3, 34, 87, 0.1);
+  }
+  .pill-review {
+    display: inline-block;
+    background: var(--amber-soft);
+    color: var(--amber-soft-fg);
+    font-size: 0.62rem;
+    font-weight: 700;
+    padding: 0.1rem 0.4rem;
+    border-radius: 999px;
+    margin-right: 0.35rem;
+    white-space: nowrap;
+  }
+</style>
+</head>
+<body>
+<div id="root">
+  <div id="boot" style="padding:2rem;font-family:Inter,system-ui,sans-serif;color:#787c8c;font-size:14px">
+    Loading Clara Receipts… <span style="opacity:.7">(if this message stays, JavaScript or the CDN did not load)</span>
+  </div>
+</div>
+<div id="err" style="display:none;white-space:pre-wrap;font-family:ui-monospace,Menlo,monospace;font-size:13px;color:#9b1c1c;background:#fff4f4;border:1px solid #f0c0c0;padding:16px;margin:16px;border-radius:8px;line-height:1.5"></div>
+
+<script>
+  window.__showErr = function (msg) {
+    var e = document.getElementById("err");
+    if (e) { e.style.display = "block"; e.textContent = "⚠ Error:\n" + msg; }
+    var b = document.getElementById("boot");
+    if (b) b.style.display = "none";
+  };
+  window.addEventListener("error", function (ev) {
+    window.__showErr((ev.message || "") + (ev.filename ? "\n" + ev.filename + ":" + ev.lineno : ""));
+  });
+  window.addEventListener("unhandledrejection", function (ev) {
+    var r = ev.reason;
+    window.__showErr("Promise rejection: " + (r && (r.stack || r.message) ? (r.stack || r.message) : r));
+  });
+</script>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone@7.26.4/babel.min.js"></script>
+
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useMemo, useRef, useCallback } = React;
+
+/* ---------- analytics ---------- */
+function track(event, payload) {
+  console.log("[track]", event, payload || {});
+}
+
+/* ---------- helpers ---------- */
+const fmt = (n) => Number(n || 0).toLocaleString("es-CO");
+const COLORS = ["salmon", "cyan", "primary", "accent", "amber-soft", "mute"];
+const colorVar = {
+  salmon: "var(--salmon)",
+  cyan: "var(--cyan)",
+  primary: "var(--primary)",
+  accent: "var(--accent)",
+  "amber-soft": "var(--amber-soft)",
+  mute: "var(--mute)",
+};
+const gradFor = (c) => `linear-gradient(135deg, ${colorVar[c]} 0%, rgba(255,255,255,0.35) 130%)`;
+const emailOk = (e) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.trim());
+
+/* ---------- mock receipt pool (Total is computed = subtotal + tax) ---------- */
+const RECEIPT_POOL = [
+  { merchant: "Avianca",             date: "2026-06-15", category: "Airfare",         subtotal: 575630, tax: 109370, currency: "COP" },
+  { merchant: "Hotel Estelar",       date: "2026-05-18", category: "Lodging",         subtotal: 420000, tax: 79800,  currency: "COP", flagDate: true },
+  { merchant: "Andrés Carne de Res", date: "2026-06-16", category: "Meals",           subtotal: 142017, tax: 26983,  currency: "COP" },
+  { merchant: "Uber",                date: "2026-06-16", category: "Transport",       subtotal: 28500,  tax: 0,      currency: "COP" },
+  { merchant: "Terpel",              date: "2026-06-17", category: "Fuel",            subtotal: 180000, tax: 0,      currency: "COP", flagTax: true },
+  { merchant: "Panamericana",        date: "2026-06-17", category: "Office supplies", subtotal: 45378,  tax: 8622,   currency: "COP" },
+  { merchant: "Juan Valdez Café",    date: "2026-06-15", category: "Meals",           subtotal: 18487,  tax: 3513,   currency: "COP" },
+  { merchant: "Crepes & Waffles",    date: "2026-06-16", category: "Meals",           subtotal: 52101,  tax: 9899,   currency: "COP" },
+  { merchant: "Hotel B3 Virrey",     date: "2026-06-16", category: "Lodging",         subtotal: 310924, tax: 59076,  currency: "COP" },
+  { merchant: "Taxi Libre",          date: "2026-06-16", category: "Transport",       subtotal: 24000,  tax: 0,      currency: "COP" },
+  { merchant: "Éxito",               date: "2026-06-17", category: "Office supplies", subtotal: 63025,  tax: 11975,  currency: "COP" },
+  { merchant: "Avianca",             date: "2026-06-18", category: "Airfare",         subtotal: 512605, tax: 97395,  currency: "COP" },
+  { merchant: "Bogotá Beer Company", date: "2026-06-17", category: "Meals",           subtotal: 71429,  tax: 13571,  currency: "COP" },
+  { merchant: "Tigo",                date: "2026-06-17", category: "Communications",  subtotal: 33613,  tax: 6387,   currency: "COP" },
+  { merchant: "Parking SAS",         date: "2026-06-18", category: "Transport",       subtotal: 12605,  tax: 2395,   currency: "COP" },
+];
+
+const MOCK_FILES = [
+  "IMG_4821.jpg", "Hotel_Estelar.pdf", "Uber_receipt.png",
+  "Terpel_fuel.jpg", "Andres_meal.jpg", "Panamericana.pdf",
+  "JuanValdez.jpg", "Crepes_Waffles.pdf", "Hotel_B3.pdf",
+  "Taxi_Libre.jpg", "Exito_receipt.png", "Avianca_return.pdf",
+  "BBC_dinner.jpg", "Tigo_invoice.pdf", "Parking.jpg",
+];
+
+const MAX_RECEIPTS = 15;
+const PAGE_SIZE = 9;
+const rowTotal = (r) => Number(r.subtotal || 0) + Number(r.tax || 0);
+
+/* ---------- layout chrome ---------- */
+function Header() {
+  return (
+    <header className="border-b border-border bg-white">
+      <div className="mx-auto w-full max-w-5xl px-4 sm:px-6 h-16 flex items-center justify-between">
+        <div className="flex items-baseline gap-2">
+          <span className="text-xl font-extrabold text-navy tracking-tight">Clara</span>
+          <span className="text-sm text-mute font-medium">Receipts</span>
+        </div>
+        <span className="text-xs text-mute">by Clara</span>
+      </div>
+    </header>
+  );
+}
+
+function Footer() {
+  return (
+    <footer className="mt-16 py-8 text-center text-xs text-mute">
+      Powered by Clara · Free for every trip.
+    </footer>
+  );
+}
+
+function Stepper({ step }) {
+  const labels = ["Trip", "Receipts", "Review", "Send"];
+  // step 1..4 map to index 0..3
+  const current = step - 1;
+  return (
+    <div className="mx-auto w-full max-w-2xl px-2 mt-8 mb-8">
+      <div className="flex items-center">
+        {labels.map((label, i) => {
+          const done = i < current;
+          const active = i === current;
+          return (
+            <React.Fragment key={label}>
+              <div className="flex flex-col items-center" style={{ flex: "0 0 auto" }}>
+                <div
+                  className="flex items-center justify-center rounded-full text-sm font-bold"
+                  style={{
+                    width: 28, height: 28,
+                    background: active ? "var(--primary)" : done ? "var(--navy)" : "#fff",
+                    color: done ? "#fff" : "var(--navy)",
+                    border: active || done ? "none" : "1px solid var(--border)",
+                  }}
+                >
+                  {done ? "✓" : i + 1}
+                </div>
+                <span className="mt-1.5 text-[11px]" style={{ color: active ? "var(--navy)" : "var(--mute)", fontWeight: active ? 700 : 500 }}>
+                  {label}
+                </span>
+              </div>
+              {i < labels.length - 1 && (
+                <div className="flex-1 h-px mx-2" style={{ background: i < current ? "var(--navy)" : "var(--border)" }} />
+              )}
+            </React.Fragment>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/* ---------- screen 0: landing ---------- */
+function Landing({ onStart }) {
+  const features = [
+    { t: "Snap or upload", d: "Photos or PDFs of any receipt — no special app." },
+    { t: "AI reads each receipt", d: "Merchant, date, tax and total, extracted for you." },
+    { t: "Email-ready report", d: "A clean, Clara-branded report in your inbox." },
+  ];
+  return (
+    <div className="pt-10 sm:pt-16 text-center">
+      <span className="inline-flex items-center gap-2 text-xs font-medium text-navy bg-surface rounded-full px-3 py-1">
+        <span style={{ width: 7, height: 7, borderRadius: 999, background: "var(--primary)", display: "inline-block" }} />
+        Free · No signup required
+      </span>
+      <h1 className="mt-6 text-4xl sm:text-5xl md:text-6xl font-extrabold text-navy leading-[1.05]">
+        Your trip expense report,<br />
+        done in minutes. <span style={{ color: "var(--accent)" }}>Free.</span>
+      </h1>
+      <p className="mt-5 text-base sm:text-lg text-mute max-w-2xl mx-auto">
+        Upload your receipts and get a clean, ready-to-send report. No more typing rows into Excel.
+      </p>
+      <div className="mt-8">
+        <button className="btn-primary text-base sm:text-lg" style={{ padding: "0.9rem 1.6rem" }} onClick={onStart}>
+          Create your first report — free →
+        </button>
+      </div>
+      <p className="mt-3 text-xs text-mute">Powered by Clara · No credit card, no signup required.</p>
+
+      <div className="mt-14 grid gap-4 sm:grid-cols-3 text-left">
+        {features.map((f) => (
+          <div key={f.t} className="card-soft p-5">
+            <div className="flex items-center justify-center rounded-lg mb-3" style={{ width: 36, height: 36, background: "var(--surface)" }}>
+              <span style={{ color: "var(--navy)", fontWeight: 800 }}>✓</span>
+            </div>
+            <h3 className="text-base font-bold text-navy">{f.t}</h3>
+            <p className="mt-1 text-sm text-mute">{f.d}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ---------- screen 1: trip form ---------- */
+function TripForm({ trip, setTrip, onNext }) {
+  const nameErr = trip.name.length > 0 && trip.name.length < 3;
+  const destErr = trip.destination.length > 0 && trip.destination.length < 3;
+  const dateErr = trip.start && trip.end && trip.end < trip.start;
+  const valid =
+    trip.name.length >= 3 && trip.destination.length >= 3 && trip.start && trip.end && !dateErr;
+
+  const upd = (k, v) => setTrip((t) => ({ ...t, [k]: v }));
+
+  return (
+    <div className="mx-auto w-full max-w-2xl">
+      <h2 className="text-2xl font-extrabold text-navy">Let's set up your trip.</h2>
+      <p className="mt-1 text-sm text-mute">A few details so your report has the right header.</p>
+
+      <div className="card-soft p-6 sm:p-8 mt-6">
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-semibold text-navy mb-1">Trip name</label>
+            <input className="input-field" placeholder="Bogotá client visit"
+              value={trip.name} onChange={(e) => upd("name", e.target.value)} />
+            {nameErr && <p className="mt-1 text-xs" style={{ color: "var(--destructive)" }}>Please enter at least 3 characters.</p>}
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-navy mb-1">Destination</label>
+            <input className="input-field" placeholder="Bogotá, Colombia"
+              value={trip.destination} onChange={(e) => upd("destination", e.target.value)} />
+            {destErr && <p className="mt-1 text-xs" style={{ color: "var(--destructive)" }}>Please enter at least 3 characters.</p>}
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label className="block text-sm font-semibold text-navy mb-1">Start date</label>
+              <input type="date" className="input-field" value={trip.start} onChange={(e) => upd("start", e.target.value)} />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-navy mb-1">End date</label>
+              <input type="date" className="input-field" min={trip.start || undefined} value={trip.end} onChange={(e) => upd("end", e.target.value)} />
+              {dateErr && <p className="mt-1 text-xs" style={{ color: "var(--destructive)" }}>End date can't be earlier than start date.</p>}
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-7 flex justify-end">
+          <button className="btn-primary" disabled={!valid} onClick={onNext}>Add receipts →</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- screen 2: upload ---------- */
+function Upload({ files, setFiles, onBack, onProcess, processing }) {
+  const [upVisible, setUpVisible] = useState(PAGE_SIZE);
+
+  const addMock = useCallback(() => {
+    setFiles((prev) => {
+      if (prev.length >= MAX_RECEIPTS) return prev;
+      const idx = prev.length;
+      const name = MOCK_FILES[idx % MOCK_FILES.length];
+      const color = COLORS[idx % COLORS.length];
+      const id = "f" + idx + "_" + Math.random().toString(36).slice(2, 7);
+      setTimeout(() => {
+        setFiles((cur) => cur.map((x) => (x.id === id ? { ...x, uploading: false } : x)));
+      }, 1000);
+      return [...prev, { id, name, color, uploading: true }];
+    });
+  }, [setFiles]);
+
+  const [drag, setDrag] = useState(false);
+  const onDrop = (e) => {
+    e.preventDefault();
+    setDrag(false);
+    addMock();
+  };
+
+  const full = files.length >= MAX_RECEIPTS;
+  const anyUploading = files.some((f) => f.uploading);
+  const visible = files.slice(0, upVisible);
+  const upRemaining = files.length - visible.length;
+
+  return (
+    <div className="mx-auto w-full max-w-3xl">
+      <h2 className="text-2xl font-extrabold text-navy">Add your receipts.</h2>
+      <p className="mt-1 text-sm text-mute">Upload your files to generate the full report (JPG, PNG, or PDF).</p>
+
+      <div
+        className="mt-6 rounded-xl p-8 text-center"
+        style={{ border: "2px dashed " + (drag ? "var(--navy)" : "var(--border)"), background: drag ? "var(--surface)" : "#fff", transition: "all .15s ease" }}
+        onDragOver={(e) => { e.preventDefault(); setDrag(true); }}
+        onDragLeave={() => setDrag(false)}
+        onDrop={onDrop}
+      >
+        <div className="mx-auto flex items-center justify-center rounded-full" style={{ width: 48, height: 48, background: "var(--surface)" }}>
+          <span style={{ fontSize: 20 }}>📎</span>
+        </div>
+        <p className="mt-3 text-sm font-medium text-navy">Drag your receipts here — photos or PDF.</p>
+        <p className="my-2 text-xs text-mute">or</p>
+        <button className="btn-outline-navy" onClick={addMock} disabled={full}>Browse files</button>
+        <p className="mt-2 text-xs text-mute">
+          {full ? "Max 15 receipts in this demo." : files.length + " of " + MAX_RECEIPTS + " receipts added."}
+        </p>
+      </div>
+
+      <div className="mt-6 flex items-center justify-between">
+        <button className="btn-outline-navy" onClick={onBack}>← Back</button>
+        <button className="btn-primary" disabled={files.length === 0 || anyUploading} onClick={onProcess}>Process receipts →</button>
+      </div>
+
+      {files.length > 0 && (
+        <React.Fragment>
+          <div className="mt-5 grid gap-4 grid-cols-2 sm:grid-cols-3">
+            {visible.map((f) => (
+              <div key={f.id} className="card-soft overflow-hidden">
+                {f.uploading ? (
+                  <div className="relative flex items-center justify-center" style={{ height: 112, background: "var(--surface)" }}>
+                    <div className="spinner" style={{ width: 24, height: 24, borderWidth: 3 }} />
+                    <div className="uploadbar-track"><div className="uploadbar-fill" /></div>
+                  </div>
+                ) : (
+                  <div className="relative flex items-center justify-center" style={{ height: 112, background: gradFor(f.color) }}>
+                    <div className="rounded bg-white/80 px-3 py-2" style={{ minWidth: 70 }}>
+                      <p className="text-[8px] font-bold text-navy tracking-wider text-center mb-1">RECEIPT</p>
+                      <div className="space-y-1">
+                        <div style={{ height: 3, width: "100%", background: "#cbd0d8", borderRadius: 2 }} />
+                        <div style={{ height: 3, width: "70%", background: "#cbd0d8", borderRadius: 2 }} />
+                        <div style={{ height: 3, width: "85%", background: "#cbd0d8", borderRadius: 2 }} />
+                      </div>
+                    </div>
+                  </div>
+                )}
+                <p className="px-3 py-2 text-xs font-medium truncate" style={{ color: f.uploading ? "var(--mute)" : "var(--navy)" }}>
+                  {f.uploading ? "Uploading " + f.name + "…" : f.name}
+                </p>
+              </div>
+            ))}
+          </div>
+          {upRemaining > 0 && (
+            <div className="mt-4 text-center">
+              <button
+                onClick={() => setUpVisible((c) => c + PAGE_SIZE)}
+                style={{ background: "none", border: "none", color: "var(--accent)", fontWeight: 600, cursor: "pointer", fontSize: "0.9rem" }}>
+                Load more receipts ({upRemaining} more) ↓
+              </button>
+            </div>
+          )}
+        </React.Fragment>
+      )}
+
+      {processing && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: "rgba(3,34,87,0.4)", backdropFilter: "blur(4px)" }}>
+          <div className="card-soft p-8 text-center mx-4" style={{ maxWidth: 360 }}>
+            <div className="spinner mx-auto" />
+            <p className="mt-4 text-base font-bold text-navy">Reading your receipts with AI…</p>
+            <p className="mt-1 text-sm text-mute">Extracting merchant, date, tax and total from each file.</p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ---------- editable cell ---------- */
+function EditableCell({ value, onChange, numeric, align, strong, flagged, dateInput }) {
+  const [focused, setFocused] = useState(false);
+  if (dateInput) {
+    return (
+      <div className="flex items-center">
+        {flagged && <span className="pill-review">⚠ review</span>}
+        <input type="date" className="editable-cell" value={value || ""} onChange={(e) => onChange(e.target.value)} />
+      </div>
+    );
+  }
+  const display = numeric && !focused ? fmt(value) : value;
+  return (
+    <div className="flex items-center" style={{ justifyContent: align === "right" ? "flex-end" : "flex-start" }}>
+      {flagged && <span className="pill-review">⚠ review</span>}
+      <input
+        className="editable-cell"
+        style={{ textAlign: align === "right" ? "right" : "left", fontWeight: strong ? 700 : 400, color: strong ? "var(--navy)" : undefined }}
+        value={display}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        onChange={(e) => {
+          const v = numeric ? Number(String(e.target.value).replace(/[^\d]/g, "")) : e.target.value;
+          onChange(v);
+        }}
+      />
+    </div>
+  );
+}
+
+/* ---------- screen 3: review ---------- */
+function Review({ rows, setRows, onBack, onNext }) {
+  const [loading, setLoading] = useState(true);
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [sortKey, setSortKey] = useState(null);
+  const [sortDir, setSortDir] = useState("asc");
+  const editedOnce = useRef(false);
+
+  useEffect(() => {
+    const t = setTimeout(() => setLoading(false), 900);
+    return () => clearTimeout(t);
+  }, []);
+
+  const editRow = (id, key, val) => {
+    if (!editedOnce.current) { track("field_edited"); editedOnce.current = true; }
+    setRows((rs) => rs.map((r) => (r.id === id ? { ...r, [key]: val, flagDate: false, flagTax: false } : r)));
+  };
+
+  const totalSpent = useMemo(() => rows.reduce((s, r) => s + rowTotal(r), 0), [rows]);
+
+  const COLUMNS = [
+    { label: "Receipt", key: null },
+    { label: "Merchant", key: "merchant" },
+    { label: "Date", key: "date" },
+    { label: "Category", key: "category" },
+    { label: "Subtotal", key: "subtotal", num: true },
+    { label: "Tax (IVA)", key: "tax", num: true },
+    { label: "Total", key: "total", num: true },
+    { label: "Cur.", key: "currency" },
+  ];
+
+  const sortedRows = useMemo(() => {
+    if (!sortKey) return rows;
+    const arr = [...rows];
+    const numeric = sortKey === "subtotal" || sortKey === "tax" || sortKey === "total";
+    arr.sort((a, b) => {
+      let av = sortKey === "total" ? rowTotal(a) : a[sortKey];
+      let bv = sortKey === "total" ? rowTotal(b) : b[sortKey];
+      if (numeric) { av = Number(av) || 0; bv = Number(bv) || 0; return sortDir === "asc" ? av - bv : bv - av; }
+      av = String(av || ""); bv = String(bv || "");
+      return sortDir === "asc" ? av.localeCompare(bv) : bv.localeCompare(av);
+    });
+    return arr;
+  }, [rows, sortKey, sortDir]);
+
+  const toggleSort = (key) => {
+    if (!key) return;
+    if (sortKey === key) {
+      if (sortDir === "asc") setSortDir("desc");
+      else { setSortKey(null); setSortDir("asc"); }
+    } else { setSortKey(key); setSortDir("asc"); }
+  };
+
+  const visibleRows = sortedRows.slice(0, visibleCount);
+  const remaining = rows.length - visibleRows.length;
+  const skeletonCount = Math.min(rows.length || PAGE_SIZE, PAGE_SIZE);
+
+  return (
+    <div className="mx-auto w-full max-w-5xl">
+      <h2 className="text-2xl font-extrabold text-navy">We read your receipts. Quick review?</h2>
+      <p className="mt-1 text-sm text-mute">Tap any cell to edit, or click a column header to sort. We flagged a couple of values worth double-checking.</p>
+
+      <div className="mt-5 grid grid-cols-2 gap-4" style={{ maxWidth: 560 }}>
+        <div className="rounded-xl px-5 py-4" style={{ background: "var(--navy)", color: "#fff" }}>
+          <p className="text-xs uppercase tracking-wide" style={{ color: "rgba(255,255,255,0.7)" }}>Total spent</p>
+          <p className="text-xl font-extrabold leading-tight mt-1">COP {fmt(totalSpent)}</p>
+        </div>
+        <div className="card-soft px-5 py-4">
+          <p className="text-xs uppercase tracking-wide text-mute">Receipts</p>
+          <p className="text-xl font-extrabold text-navy leading-tight mt-1">{rows.length}</p>
+        </div>
+      </div>
+
+      <div className="card-soft mt-5 overflow-x-auto">
+        <table className="w-full" style={{ borderCollapse: "collapse", minWidth: 760 }}>
+          <thead>
+            <tr style={{ background: "var(--surface)" }}>
+              {COLUMNS.map((col, i) => {
+                const active = col.key && sortKey === col.key;
+                return (
+                  <th key={col.label}
+                    onClick={() => toggleSort(col.key)}
+                    className={"px-3 py-2.5 text-[11px] font-bold uppercase text-navy" + (col.key ? " sort-th" : "")}
+                    style={{ textAlign: i >= 4 && i <= 6 ? "right" : "left", whiteSpace: "nowrap" }}>
+                    {col.label}{active ? (sortDir === "asc" ? " ▲" : " ▼") : ""}
+                  </th>
+                );
+              })}
+            </tr>
+          </thead>
+          <tbody>
+            {loading
+              ? Array.from({ length: skeletonCount }).map((_, ri) => (
+                  <tr key={"sk" + ri} style={{ borderTop: "1px solid var(--border)" }}>
+                    {COLUMNS.map((_, i) => (
+                      <td key={i} className="px-3 py-3"><div className="skeleton" style={{ height: 14, width: i === 0 ? 24 : "80%" }} /></td>
+                    ))}
+                  </tr>
+                ))
+              : visibleRows.map((r) => (
+                  <tr key={r.id} style={{ borderTop: "1px solid var(--border)" }}>
+                    <td className="px-3 py-2">
+                      <div className="flex items-center justify-center rounded" style={{ width: 32, height: 32, background: gradFor(r.color) }}>
+                        <span style={{ fontSize: 14 }}>📄</span>
+                      </div>
+                    </td>
+                    <td className="px-2 py-2" style={{ minWidth: 150 }}>
+                      <EditableCell value={r.merchant} onChange={(v) => editRow(r.id, "merchant", v)} />
+                    </td>
+                    <td className="px-2 py-2" style={{ minWidth: 160 }}>
+                      <EditableCell value={r.date} dateInput flagged={r.flagDate} onChange={(v) => editRow(r.id, "date", v)} />
+                    </td>
+                    <td className="px-2 py-2" style={{ minWidth: 130 }}>
+                      <EditableCell value={r.category} onChange={(v) => editRow(r.id, "category", v)} />
+                    </td>
+                    <td className="px-2 py-2"><EditableCell value={r.subtotal} numeric align="right" onChange={(v) => editRow(r.id, "subtotal", v)} /></td>
+                    <td className="px-2 py-2"><EditableCell value={r.tax} numeric align="right" flagged={r.flagTax} onChange={(v) => editRow(r.id, "tax", v)} /></td>
+                    <td className="px-3 py-2 text-right" style={{ fontWeight: 700, color: "var(--navy)", whiteSpace: "nowrap" }}>{fmt(rowTotal(r))}</td>
+                    <td className="px-3 py-2 text-xs text-mute">{r.currency}</td>
+                  </tr>
+                ))}
+          </tbody>
+        </table>
+      </div>
+      {!loading && remaining > 0 && (
+        <div className="mt-4 text-center">
+          <button
+            onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
+            style={{ background: "none", border: "none", color: "var(--accent)", fontWeight: 600, cursor: "pointer", fontSize: "0.9rem" }}>
+            Load more receipts ({remaining} more) ↓
+          </button>
+        </div>
+      )}
+
+      <div className="mt-6 flex items-center justify-between">
+        <button className="btn-outline-navy" onClick={onBack}>← Back</button>
+        <button className="btn-primary" onClick={onNext}>Send report →</button>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- screen 4: send ---------- */
+function Send({ email, setEmail, toFinance, setToFinance, financeEmail, setFinanceEmail, onBack, onSend }) {
+  const emailErr = email.length > 0 && !emailOk(email);
+  const finErr = toFinance && financeEmail.length > 0 && !emailOk(financeEmail);
+  const valid = emailOk(email) && (!toFinance || emailOk(financeEmail));
+
+  return (
+    <div className="mx-auto w-full max-w-2xl">
+      <h2 className="text-2xl font-extrabold text-navy">Where should we send your report?</h2>
+      <p className="mt-1 text-sm text-mute">We'll email you the clean, Clara-branded report — no download needed.</p>
+
+      <div className="card-soft p-6 sm:p-8 mt-6">
+        <div>
+          <label className="block text-sm font-semibold text-navy mb-1">Your email</label>
+          <input className="input-field" placeholder="you@company.com" value={email} onChange={(e) => setEmail(e.target.value)} />
+          {emailErr && <p className="mt-1 text-xs" style={{ color: "var(--destructive)" }}>Please enter a valid email address.</p>}
+        </div>
+
+        <label className="mt-5 flex items-start gap-3 cursor-pointer">
+          <input type="checkbox" checked={toFinance} onChange={(e) => setToFinance(e.target.checked)} style={{ marginTop: 3 }} />
+          <span>
+            <span className="block text-sm font-semibold text-navy">Also send a copy to my finance team</span>
+            <span className="block text-xs text-mute">Great for closing the month on time.</span>
+          </span>
+        </label>
+
+        {toFinance && (
+          <div className="mt-4">
+            <label className="block text-sm font-semibold text-navy mb-1">Finance email</label>
+            <input className="input-field" placeholder="finance@company.com" value={financeEmail} onChange={(e) => setFinanceEmail(e.target.value)} />
+            {finErr && <p className="mt-1 text-xs" style={{ color: "var(--destructive)" }}>Please enter a valid email address.</p>}
+          </div>
+        )}
+
+        <div className="mt-7 flex items-center justify-between">
+          <button className="btn-outline-navy" onClick={onBack}>← Back</button>
+          <button className="btn-primary" disabled={!valid} onClick={onSend}>Send my report →</button>
+        </div>
+      </div>
+      <p className="mt-3 text-center text-xs text-mute">Your data stays private. We never share it.</p>
+    </div>
+  );
+}
+
+/* ---------- screen 5: done + conversion ---------- */
+function Done({ email, onRestart }) {
+  const [showRef, setShowRef] = useState(false);
+  const [refName, setRefName] = useState("");
+  const [refEmail, setRefEmail] = useState("");
+  const [refNote, setRefNote] = useState("");
+  const [sent, setSent] = useState(false);
+  const refValid = refName.trim().length > 1 && emailOk(refEmail);
+
+  const openRef = () => { track("convert_cta_clicked", { cta: "share_finance" }); setShowRef(true); };
+  const submitRef = () => { track("finance_referral_submitted"); setSent(true); };
+
+  return (
+    <div className="mx-auto w-full max-w-2xl mt-8 sm:mt-10">
+      <div className="rounded-xl p-5 flex items-start gap-3" style={{ background: "#eafbe9", border: "1px solid #c6ecc0" }}>
+        <span className="flex items-center justify-center rounded-full" style={{ width: 26, height: 26, background: "var(--primary)", color: "var(--navy)", fontWeight: 800, flex: "0 0 auto" }}>✓</span>
+        <div className="flex-1">
+          <p className="text-sm font-bold text-navy">Your Clara-branded report is on its way to {email}.</p>
+          <p className="text-xs text-mute mt-0.5">Check spam if you don't see it in a minute.</p>
+          <button className="btn-outline-navy mt-3" style={{ padding: "0.5rem 0.9rem", fontSize: "0.85rem" }} onClick={onRestart}>Create another report</button>
+        </div>
+      </div>
+
+      <div className="rounded-2xl p-7 sm:p-9 mt-6" style={{ background: "var(--navy)", color: "#fff" }}>
+        <h2 className="text-2xl sm:text-3xl font-extrabold" style={{ color: "#fff" }}>
+          With Clara cards, this report <span style={{ color: "var(--primary)" }}>builds itself.</span>
+        </h2>
+        <p className="mt-3 text-sm" style={{ color: "rgba(255,255,255,0.82)" }}>
+          Every purchase on a Clara card is captured automatically — merchant, tax and total, with the receipt attached. No photos, no typing, no month-end scramble. Your expense report is always done.
+        </p>
+        <div className="mt-6 flex flex-col sm:flex-row gap-3">
+          <button className="btn-primary" onClick={openRef}>Share Clara with my finance team</button>
+          <a className="btn-outline-white" href="https://www.clara.com" target="_blank" rel="noopener noreferrer"
+             onClick={() => track("convert_cta_clicked", { cta: "see_how" })}>See how Clara works →</a>
+        </div>
+      </div>
+
+      {showRef && (
+        <div className="card-soft p-6 mt-5">
+          {sent ? (
+            <div className="rounded-lg p-4 flex items-start gap-3" style={{ background: "#eafbe9", border: "1px solid #c6ecc0" }}>
+              <span style={{ color: "var(--navy)", fontWeight: 800 }}>✓</span>
+              <p className="text-sm text-navy font-medium">Thanks — we'll reach out to your finance team. You'll be cc'd on the intro.</p>
+            </div>
+          ) : (
+            <div>
+              <h3 className="text-lg font-bold text-navy">Introduce Clara to your finance team</h3>
+              <div className="mt-4 space-y-4">
+                <div>
+                  <label className="block text-sm font-semibold text-navy mb-1">Your name</label>
+                  <input className="input-field" placeholder="Juan Franco" value={refName} onChange={(e) => setRefName(e.target.value)} />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-navy mb-1">Finance email</label>
+                  <input className="input-field" placeholder="finance@company.com" value={refEmail} onChange={(e) => setRefEmail(e.target.value)} />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-navy mb-1">Note (optional)</label>
+                  <textarea className="input-field" rows={2} placeholder="Thought this could save us hours at month-end." value={refNote} onChange={(e) => setRefNote(e.target.value)} />
+                </div>
+              </div>
+              <div className="mt-5 flex justify-end">
+                <button className="btn-primary" disabled={!refValid} onClick={submitRef}>Send intro →</button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      <p className="mt-6 text-center text-xs text-mute">Keep using Clara Receipts free for every trip.</p>
+    </div>
+  );
+}
+
+/* ---------- app ---------- */
+function App() {
+  const [step, setStep] = useState(0);
+  const [trip, setTrip] = useState({ name: "", destination: "", start: "", end: "" });
+  const [files, setFiles] = useState([]);
+  const [rows, setRows] = useState([]);
+  const [processing, setProcessing] = useState(false);
+  const [email, setEmail] = useState("");
+  const [toFinance, setToFinance] = useState(false);
+  const [financeEmail, setFinanceEmail] = useState("");
+
+  useEffect(() => { track("visit"); }, []);
+  useEffect(() => { window.scrollTo({ top: 0, behavior: "smooth" }); }, [step]);
+
+  const goTrip = () => { setStep(1); };
+  const tripNext = () => { track("trip_created", trip); setStep(2); };
+  const process = () => {
+    track("receipts_uploaded", { count: files.length });
+    setProcessing(true);
+    const generated = files.map((f, i) => {
+      const p = RECEIPT_POOL[i % RECEIPT_POOL.length];
+      return { id: "row" + i, color: f.color, ...p };
+    });
+    setTimeout(() => {
+      setRows(generated);
+      setProcessing(false);
+      track("extraction_completed", { rows: generated.length });
+      setStep(3);
+    }, 2400);
+  };
+  const reviewNext = () => setStep(4);
+  const send = () => {
+    track("email_captured", { email });
+    track("report_generated");
+    track("report_sent", { email, toFinance, financeEmail: toFinance ? financeEmail : null });
+    setStep(5);
+  };
+  const restart = () => {
+    track("new_report_started");
+    setTrip({ name: "", destination: "", start: "", end: "" });
+    setFiles([]);
+    setRows([]);
+    setEmail("");
+    setToFinance(false);
+    setFinanceEmail("");
+    setStep(1);
+  };
+
+  return (
+    <div>
+      <Header />
+      {step >= 1 && step <= 4 && <Stepper step={step} />}
+      <main className="mx-auto w-full max-w-5xl px-4 sm:px-6 pb-24">
+        {step === 0 && <Landing onStart={goTrip} />}
+        {step === 1 && <TripForm trip={trip} setTrip={setTrip} onNext={tripNext} />}
+        {step === 2 && <Upload files={files} setFiles={setFiles} onBack={() => setStep(1)} onProcess={process} processing={processing} />}
+        {step === 3 && <Review rows={rows} setRows={setRows} onBack={() => setStep(2)} onNext={reviewNext} />}
+        {step === 4 && <Send email={email} setEmail={setEmail} toFinance={toFinance} setToFinance={setToFinance} financeEmail={financeEmail} setFinanceEmail={setFinanceEmail} onBack={() => setStep(3)} onSend={send} />}
+        {step === 5 && <Done email={email} onRestart={restart} />}
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+try {
+  ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+} catch (e) {
+  if (window.__showErr) window.__showErr(e && (e.stack || e.message) ? (e.stack || e.message) : String(e));
+}
+</script>
+</body>
+</html>
