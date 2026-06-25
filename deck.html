@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clara Receipts — Product Lead Case</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --navy-deep: #011131;
+      --navy: #032257;
+      --green: #86ea63;
+      --green-hover: #00cf60;
+      --cyan: #0cd6dc;
+      --salmon: #f09e99;
+      --accent: #0853b6;
+      --mute: #8e99b5;
+      --line: rgba(255,255,255,0.12);
+    }
+
+    .reveal { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-weight: 500; }
+    .reveal-viewport { background: var(--navy-deep); }
+
+    .reveal .slides { text-align: left; }
+    .reveal section { height: 100%; }
+
+    .reveal h1, .reveal h2, .reveal h3 { color: #fff; font-weight: 800; letter-spacing: -0.02em; line-height: 1.05; text-transform: none; margin: 0 0 0.4em; }
+    .reveal h1 { font-size: 3.1rem; font-weight: 900; }
+    .reveal h2 { font-size: 2.5rem; }
+    .reveal h3 { font-size: 1.5rem; }
+    .reveal p { color: #e8ecf5; line-height: 1.5; }
+    .reveal strong { color: #fff; font-weight: 800; }
+    .reveal em { color: var(--green); font-style: normal; font-weight: 700; }
+    .reveal a { color: var(--green); }
+
+    /* layout helpers */
+    .wrap { padding: 2.2rem 2.5rem 0; }
+    .kicker {
+      display: inline-block; color: var(--navy-deep); background: var(--green);
+      font-size: 0.85rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 0.28rem 0.7rem; border-radius: 999px; margin-bottom: 1.4rem;
+    }
+    .lede { font-size: 1.5rem; color: #cdd6e8; max-width: 22ch; }
+    .lede-wide { max-width: 34ch; }
+    .sub { color: var(--mute); font-size: 1.05rem; margin-top: 1.6rem; }
+    .footnote { position: absolute; bottom: 2.2rem; left: 3.2rem; right: 3.2rem; color: var(--mute); font-size: 0.85rem; border-top: 1px solid var(--line); padding-top: 0.8rem; }
+
+    /* chip rows */
+    .chips { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-top: 1.6rem; }
+    .chip {
+      border: 1.5px solid var(--line); border-radius: 12px; padding: 0.8rem 1.1rem;
+      font-size: 1.15rem; font-weight: 700; color: #fff; background: rgba(255,255,255,0.03);
+    }
+    .chip .lbl { display:block; color: var(--green); font-size: 0.78rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.2rem; }
+
+    /* flow strip */
+    .flow { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.55rem; margin-top: 1.8rem; }
+    .step {
+      border: 1.5px solid var(--line); border-radius: 12px; padding: 0.9rem 0.6rem; min-height: 7.2rem;
+      display: flex; flex-direction: column; justify-content: space-between; background: rgba(255,255,255,0.03);
+    }
+    .step .n { color: var(--green); font-weight: 900; font-size: 1.1rem; }
+    .step .t { color: #fff; font-weight: 700; font-size: 0.95rem; line-height: 1.2; }
+    .step.kill { border-color: var(--green); background: rgba(134,234,99,0.08); }
+
+    /* two-column metric layout */
+    .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; margin-top: 1.4rem; }
+    .card { border: 1.5px solid var(--line); border-radius: 14px; padding: 1.2rem 1.3rem; background: rgba(255,255,255,0.03); }
+    .card h3 { font-size: 1.05rem; color: var(--green); margin-bottom: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .card ul { margin: 0; padding-left: 1.1rem; }
+    .card li { color: #e8ecf5; font-size: 1.05rem; line-height: 1.55; margin-bottom: 0.35rem; }
+    .card li b { color: #fff; }
+
+    .quote { font-size: 1.9rem; font-weight: 800; color: #fff; line-height: 1.25; max-width: 24ch; }
+    .quote .hl { color: var(--green); }
+    .big-num { color: var(--green); font-weight: 900; }
+
+    .two { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 2rem; align-items: center; }
+    .layer { border-left: 3px solid var(--green); padding-left: 1rem; margin-bottom: 1.2rem; }
+    .layer .h { color: #fff; font-weight: 800; font-size: 1.2rem; }
+    .layer .d { color: var(--mute); font-size: 1rem; }
+
+    .killbox { border: 1.5px solid var(--salmon); border-radius: 14px; padding: 1.1rem 1.3rem; background: rgba(240,158,153,0.08); margin-top: 1.3rem; }
+    .killbox b { color: var(--salmon); }
+
+    .reveal .controls { color: var(--green); }
+    .reveal .progress { color: var(--green); }
+    .title-link { color: var(--green); font-weight: 700; font-size: 1.05rem; }
+    .name { color: #fff; font-weight: 800; font-size: 1.25rem; margin-top: 2rem; }
+    .role { color: var(--mute); font-size: 1rem; }
+
+    /* compact multi-block slides */
+    .links { display: flex; gap: 1.6rem; flex-wrap: wrap; margin-top: 0.9rem; }
+    .links a { font-weight: 700; font-size: 1.02rem; }
+    .tri { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1.6rem; }
+    .tri .card h3 { margin-bottom: 0.5rem; }
+    .tri .card p { font-size: 1rem; line-height: 1.45; margin: 0; }
+    .one-line { font-size: 1.45rem; color: #fff; font-weight: 700; max-width: 40ch; line-height: 1.25; }
+    .one-line em { color: var(--green); font-weight: 800; }
+
+    /* assumptions */
+    .asm { display: grid; gap: 0.65rem; margin-top: 1.3rem; }
+    .arow { display: grid; grid-template-columns: auto 1fr auto; gap: 1rem; align-items: center;
+            border: 1.5px solid var(--line); border-radius: 12px; padding: 0.7rem 1.1rem; background: rgba(255,255,255,0.03); }
+    .arow.kill { border-color: var(--green); background: rgba(134,234,99,0.08); }
+    .arow .ic { font-size: 1.15rem; }
+    .arow .ax { color: #fff; font-weight: 700; font-size: 1.08rem; line-height: 1.2; }
+    .arow .ax span { display: block; color: var(--mute); font-weight: 500; font-size: 0.92rem; margin-top: 0.15rem; }
+    .arow .tag { color: var(--navy-deep); background: var(--green); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.05em;
+                 text-transform: uppercase; padding: 0.25rem 0.6rem; border-radius: 999px; white-space: nowrap; }
+    .arow .tag.soft { color: var(--green); background: rgba(134,234,99,0.12); }
+
+    /* tighter hypothesis slide */
+    .hyp-quote { font-size: 1.5rem; font-weight: 800; color: #fff; line-height: 1.25; max-width: 46ch; }
+    .hyp-quote .hl { color: var(--green); }
+  </style>
+</head>
+<body>
+<div class="reveal">
+  <div class="slides">
+
+    <!-- 1 — WHAT / WHO / PROBLEM / OPPORTUNITY -->
+    <section data-background-color="#011131">
+      <div class="wrap">
+        <span class="kicker">Product Lead · LATAM — Case</span>
+        <h1>Clara Receipts</h1>
+        <p class="one-line">A free receipt-to-Excel tool, designed as an <em>experiment</em> to open a bottom-up acquisition channel for Clara.</p>
+        <div class="links">
+          <a href="https://juanfrancozafra-tech.github.io/receipts-case/">▶ Live prototype</a>
+          <a href="https://github.com/juanfrancozafra-tech/receipts-case">◆ GitHub repo (PRD · docs)</a>
+        </div>
+        <div class="tri">
+          <div class="card">
+            <h3>Who it's for</h3>
+            <p>The person who <b>suffers</b> it — not the CFO. Travelling reps, admin assistants, junior analysts: high pain, no buying power, high upward influence.</p>
+          </div>
+          <div class="card">
+            <h3>The problem</h3>
+            <p>Every trip: photograph each receipt, re-type every line into Excel, email finance. Effort, time, errors, repetition.</p>
+          </div>
+          <div class="card">
+            <h3>The opportunity</h3>
+            <p>Not a feature — an <b>acquisition wedge</b>. Free useful tool → internal champion → Clara enters the spend conversation. Lower CAC than paid.</p>
+          </div>
+        </div>
+      </div>
+      <div class="footnote">Juan Carlos Franco Zafra · Product &amp; business leader</div>
+      <aside class="notes">Una sola slide de contexto: qué es, para quién, qué problema, qué oportunidad. Apunto al prototipo y al repo desde ya. La semilla es real pero es anécdota.</aside>
+    </section>
+
+    <!-- 2 — HYPOTHESIS / METRICS / KILL SWITCH -->
+    <section data-background-color="#032257">
+      <div class="wrap">
+        <span class="kicker">Hypothesis · Metrics · Decision rule</span>
+        <p class="hyp-quote">A free, Clara-branded receipt-to-Excel tool will drive <span class="hl">≥ 40% activation</span> and convert <span class="hl">≥ 10%</span> of activated users into a Clara lead event — at <span class="hl">lower CAC</span> than paid channels.</p>
+        <div class="cols">
+          <div class="card">
+            <h3>Leading metrics</h3>
+            <ul>
+              <li><b>Activation</b> — first report shared · <span class="big-num">≥ 40%</span> <span style="color:var(--mute)">(value)</span></li>
+              <li><b>Referral / lead event</b> · <span class="big-num">≥ 10%</span> <span style="color:var(--mute)">(growth)</span></li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Lagging metrics</h3>
+            <ul>
+              <li><b>Qualified leads</b> sourced by the tool</li>
+              <li><b>CAC</b> vs. other channels — the verdict</li>
+            </ul>
+          </div>
+        </div>
+        <div class="killbox" style="border-width:2.5px; box-shadow:0 0 0 4px rgba(240,158,153,0.12); margin-top:1.5rem">
+          <span style="display:inline-block; color:var(--navy-deep); background:var(--salmon); font-size:0.78rem; font-weight:800; letter-spacing:0.07em; text-transform:uppercase; padding:0.25rem 0.7rem; border-radius:999px; margin-bottom:0.6rem">⛔ Kill switch</span>
+          <p style="margin:0; font-size:1.15rem; color:#fff">Kill if referral stays <b style="color:var(--salmon)">&lt; 5%</b> after <b style="color:var(--salmon)">≥ 500</b> activated users (~8 wks). Gate &amp; fix value first if activation <b style="color:var(--salmon)">&lt; 25%</b> after ~200 users.</p>
+        </div>
+      </div>
+      <aside class="notes">Hipótesis cuantificada y falsable. Una métrica líder por capa (valor y growth); las lagging solo en rollout real. Y una regla concreta de matar/pausar.</aside>
+    </section>
+
+    <!-- 3 — ASSUMPTIONS -->
+    <section data-background-color="#011131">
+      <div class="wrap">
+        <span class="kicker">Assumptions</span>
+        <h2>Ordered by risk — each one tested</h2>
+        <div class="asm">
+          <div class="arow kill">
+            <span class="ic">🔴</span>
+            <div class="ax">Conversion bridge: free users become Clara pipeline.<span>Tested by referral / lead-event rate · the prototype's conversion screen.</span></div>
+            <span class="tag">Kill switch</span>
+          </div>
+          <div class="arow">
+            <span class="ic">🟠</span>
+            <div class="ax">AI extraction saves real time.<span>Tested by extraction accuracy + time-to-value · simulated extraction + editable review.</span></div>
+            <span class="tag soft">In prototype</span>
+          </div>
+          <div class="arow">
+            <span class="ic">🟡</span>
+            <div class="ax">Pain is acute enough to adopt a new tool.<span>Tested by activation rate + recurrence · seeded by the observed n=1.</span></div>
+            <span class="tag soft">In prototype</span>
+          </div>
+          <div class="arow">
+            <span class="ic">🟡</span>
+            <div class="ax">Users are reachable cheaply.<span>Needs a real rollout — channel experiments. Noted in the PRD.</span></div>
+            <span class="tag soft">Rollout</span>
+          </div>
+          <div class="arow">
+            <span class="ic">🟢</span>
+            <div class="ax">No cannibalization of Clara's core.<span>Holds by design — target is non-customers. No test needed.</span></div>
+            <span class="tag soft">By design</span>
+          </div>
+        </div>
+      </div>
+      <aside class="notes">El build sigue al riesgo: el prototipo ataca #1 (kill switch) y #2. Cada supuesto declara cómo se prueba; algunos solo en rollout real.</aside>
+    </section>
+
+    <!-- 4 — PROTOTYPE + DESIGN DECISION -->
+    <section data-background-color="#032257">
+      <div class="wrap">
+        <span class="kicker">The prototype — the instrument, not slideware</span>
+        <h2 style="font-size:2rem; margin-bottom:0.3rem">User flow</h2>
+        <div class="flow">
+          <div class="step"><div class="n">0</div><div class="t">Landing</div></div>
+          <div class="step"><div class="n">1</div><div class="t">Create trip</div></div>
+          <div class="step"><div class="n">2</div><div class="t">Upload receipts</div></div>
+          <div class="step"><div class="n">3</div><div class="t">Review &amp; edit <span style="color:var(--green)">(the aha)</span></div></div>
+          <div class="step"><div class="n">4</div><div class="t">Send report</div></div>
+          <div class="step kill"><div class="n">5</div><div class="t">Conversion bridge</div></div>
+        </div>
+        <p class="sub" style="margin-top:1rem">6 screens · AI extraction simulated (a valid Wizard-of-Oz design) · event taxonomy instrumented end to end.</p>
+        <div class="links">
+          <a href="https://juanfrancozafra-tech.github.io/receipts-case/">▶ Open the live prototype</a>
+          <a href="https://github.com/juanfrancozafra-tech/receipts-case">◆ GitHub repo (PRD · docs)</a>
+        </div>
+        <div class="killbox" style="border-color:var(--green); background:rgba(134,234,99,0.08); margin-top:1.4rem">
+          <p style="margin:0; font-size:1.05rem; color:#fff"><b style="color:var(--green)">Key design decision — the email is the delivery, not a toll.</b> No download button: the only way to get the report is the email we send it to. A real, usually corporate address → identifies the company, and conversion is asked at peak value.</p>
+        </div>
+      </div>
+      <aside class="notes">Abro el prototipo en vivo. Pantalla 3 = "aha", pantalla 5 = kill switch. Quitar la descarga convierte la fricción en función: dan un correo real, casi siempre corporativo, y la conversión se pide en el pico de valor.</aside>
+    </section>
+
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/plugin/notes/notes.min.js"></script>
+<script>
+  Reveal.initialize({
+    hash: true,
+    controls: true,
+    progress: true,
+    slideNumber: 'c/t',
+    transition: 'slide',
+    width: 1280,
+    height: 720,
+    margin: 0.06,
+    plugins: [ RevealNotes ]
+  });
+</script>
+</body>
+</html>

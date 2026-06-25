@@ -164,3 +164,27 @@ A pragmatic path from validation prototype to a launchable experiment, in priori
 4. **Storage + persistence.** Trips, receipts, and extracted rows (e.g. Supabase: Postgres + Storage + Edge Functions).
 5. **Analytics pipeline.** Wire the event taxonomy to a real product-analytics tool so the funnel and the kill-switch metrics are measurable.
 6. **Channel experiments (assumption #4).** Test how to reach the target user cheaply — the one assumption a prototype can't address.
+
+## 14. Constraints (time, budget, team)
+
+These are deliberate guardrails, not just a plan. The whole point of a bottom-up wedge is that the bet stays **cheap, fast, and reversible** relative to the paid channel it's trying to beat — so the experiment is time-boxed and budget-boxed up front. *(Figures below are reasoned benchmarks, adjustable with Clara's real numbers.)*
+
+**Time.**
+
+- **Launch window: ship within ~3–4 weeks of green-light.** The build reuses managed APIs (OCR, email, DB) instead of standing up infrastructure, so the critical slice is small enough to ship in that window with one engineer + PM. If it can't ship in ~4 weeks, the scope has crept past the critical slice (§9) — cut, don't extend.
+- **Read-out window: ~8 weeks to the keep/kill signal**, with a gate at ~4 weeks / 200 users (§5). If the tool can't reach ~500 activated users within 8 weeks, the read is inconclusive *and* the channel isn't scaling — that is itself a negative signal.
+- **Total elapsed: ≤ one quarter** from green-light to decision. The experiment is not allowed to drift into an open-ended program.
+
+**Budget.**
+
+- **Build is low-cost by design:** no custom OCR/ML and no dedicated infra — managed APIs only. The build is measured in a few engineer-weeks, not a team-quarter.
+- **Variable-cost ceiling:** cost per processed receipt (mostly AI extraction) must stay under a cap such that the fully-loaded cost per qualified lead still beats current CAC (assumption #5). If per-receipt cost breaches that cap, the free model is broken on economics *before* growth even matters — a reason to kill independent of the funnel.
+- **No offsetting revenue:** the tool is free, so the experiment runs on a fixed budget envelope with nothing to recover mid-flight. That's intentional — the bet is sized to be killable with negligible sunk cost.
+- **Acquisition-spend cap:** channel experiments (assumption #4) run under a capped budget; if target CAC isn't reachable within that cap, kill.
+
+**Team & scope.**
+
+- Built and run by a **small team (~1 PM + 1 engineer)**, leaning on Clara's existing brand, legal, and sales functions rather than standing up new ones.
+- **Scope held to the critical slice (§9):** anything not needed to test assumptions #1–#2 is deferred — specifically to protect the time and budget box above, not because it lacks value.
+
+**Reversibility.** Because it's free, API-based, stores little, and is time-boxed, killing it leaves almost no sunk cost or technical debt. The cost of being wrong is kept deliberately low — which is what makes running the experiment an easy yes.
