@@ -4,6 +4,7 @@
 
 > **Status:** validation prototype (live link below). Discovery is built on well-reasoned assumptions, **not field work** — this is a designed case, seeded by one real anecdote (n=1). Numeric targets are reasoned benchmarks, declared as such.
 > **Live prototype:** https://juanfrancozafra-tech.github.io/receipts-case/
+> **Disclaimer:** This is just a personal concept I developed around a real company. It is **not affiliated with, endorsed by, or owned by Clara**.
 
 ---
 
