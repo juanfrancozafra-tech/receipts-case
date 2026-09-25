@@ -1,5 +1,7 @@
 # Clara Receipts — a product case
 
+> **Disclaimer:** This is an independent portfolio case study created by Juan Carlos Franco Zafra. It is not affiliated with, endorsed by, or sponsored by Clara. The Clara name and brand are used for illustrative purposes only, and all data shown is fictional.
+
 A free, Clara-branded tool that turns a pile of trip receipts into a clean expense report (Excel) in seconds — designed as a **structured experiment** to test whether it can open a bottom-up acquisition channel for Clara.
 
 **▶ Live prototype:** https://juanfrancozafra-tech.github.io/receipts-case/
